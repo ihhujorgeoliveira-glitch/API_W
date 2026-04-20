@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  whatsapp-api:
+    build: .
+    container_name: whatsapp-api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./session:/app/session
+    restart: always
