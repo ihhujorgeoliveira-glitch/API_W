@@ -61,7 +61,7 @@ curl --location 'http://localhost:3000/notify' \
   --header 'Authorization: 123456' \
   --data-raw '{
     "mensagem": "Teste Notificação",
-    "destino": "120363425907857152@g.us"
+    "destino": "IDDORUPO@g.us"
   }'
 ```
 
