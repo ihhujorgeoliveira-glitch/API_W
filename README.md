@@ -1,62 +1,160 @@
-📲 WhatsApp API - Docker Compose
+# WhatsApp API Docker 📲
 
-Este projeto permite subir uma API de WhatsApp via Docker, realizar autenticação via QR Code e enviar mensagens via HTTP.
+API de notificações via WhatsApp utilizando Docker e Node.js.
 
-🚀 Pré-requisitos
+## Pré-requisitos
 
-Antes de iniciar, certifique-se de ter instalado:
+- Docker
+- Docker Compose
+- Conta WhatsApp ativa
 
-Docker
-Docker Compose (ou plugin docker compose v2)
+## Início Rápido
 
-Verifique com:
+### 1. Subir o projeto
 
-docker --version
-docker compose version
-📦 Como subir o projeto
+Execute o comando abaixo na pasta do projeto:
 
-Na pasta raiz do projeto, execute:
-
+```bash
 docker-compose up -d --build
+```
 
-Ou (caso use Docker Compose v2):
+Este comando:
+- Constrói a imagem Docker
+- Inicia o container em background
+- Inicializa a aplicação
 
-docker compose up -d --build
-📲 Primeiro uso (Autenticação WhatsApp)
+### 2. Ver os logs e escanear o QR Code
 
-Após subir o container, acompanhe os logs:
+Após subir o projeto, visualize os logs para obter o QR code:
 
+```bash
 docker logs -f whatsapp-api
+```
 
-📌 Um QR Code será exibido no terminal.
+A saída será similar a:
 
-👉 Escaneie com o WhatsApp (Configurações > Aparelhos conectados)
+```
+📲 Escaneie o QR abaixo:
+█████████████████████████████████████
+█████████████████████████████████████
+████ ▄▄▄▄▄ █▀▄▀▀█ ██▀█  █ ▄▄▄▄▄ ████
+████ █   █ █▄  ▄█ ██ █  █ █   █ ████
+████ █▄▄▄█ █ ▀ █▀  █ █▄██ █▄▄▄█ ████
+████▄▄▄▄▄▄▄█ ▀ █ ▀ █▄▄ █ ▄▄▄▄▄▄▄████
+█████████████████████████████████████
+```
 
-🔎 Verificando se está rodando
+**Ação:** Abra o WhatsApp no seu celular e escaneie o QR code que aparecerá no terminal.
 
-Após autenticar, a API estará disponível em:
+Após escanear, você verá a mensagem:
+```
+✅ WhatsApp conectado!
+```
 
-http://localhost:3000
-📤 Enviar mensagem via API
+### 3. Testar a API
 
-Exemplo usando curl:
+Após a conexão bem-sucedida, você pode enviar mensagens via API usando `curl`:
 
+```bash
 curl --location 'http://localhost:3000/notify' \
---header 'Content-Type: application/json' \
---header 'Authorization: 123456' \
---data-raw '{
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: 123456' \
+  --data-raw '{
     "mensagem": "Teste Notificação",
     "destino": "120363425907857152@g.us"
-}'
-🧾 Parâmetros
-Campo	Descrição
-mensagem	Texto da mensagem a ser enviada
-destino	ID do grupo ou número do WhatsApp
-Authorization	Token de autenticação da API
-🐳 Comandos úteis
-Parar o container
-docker-compose down
-Ver logs em tempo real
+  }'
+```
+
+**Parâmetros:**
+- `mensagem`: Texto da mensagem a enviar
+- `destino`: ID do contato ou grupo no formato WhatsApp (`numero@c.us` para contato, `numero@g.us` para grupo)
+- `Authorization`: Token de autenticação (padrão: `123456`)
+
+## Endpoints
+
+### POST `/notify`
+
+Envia uma notificação via WhatsApp.
+
+**Headers:**
+```
+Content-Type: application/json
+Authorization: 123456
+```
+
+**Body:**
+```json
+{
+  "mensagem": "Sua mensagem aqui",
+  "destino": "120363425907857152@g.us"
+}
+```
+
+**Resposta (sucesso):**
+```json
+{
+  "status": "enviado",
+  "mensagem": "Sua mensagem aqui"
+}
+```
+
+## Variáveis de Ambiente
+
+Você pode configurar as seguintes variáveis no arquivo `docker-compose.yml`:
+
+- `TOKEN`: Token de autenticação da API (padrão: `123456`)
+
+## Troubleshooting
+
+### Problema: QR Code não aparece
+
+**Solução:** Aguarde alguns segundos e execute novamente:
+```bash
 docker logs -f whatsapp-api
-Reiniciar serviço
-docker-compose restart
+```
+
+### Problema: "WhatsApp desconectado"
+
+**Solução:** 
+1. Verifique a conexão de internet
+2. Reinicie o container:
+```bash
+docker-compose restart whatsapp-api
+```
+
+### Parar o projeto
+
+Para parar e remover os containers:
+
+```bash
+docker-compose down
+```
+
+## Estrutura do Projeto
+
+```
+.
+├── Dockerfile              # Configuração da imagem Docker
+├── docker-compose.yml      # Orquestração dos containers
+├── index.js               # Aplicação principal
+├── package.json           # Dependências do Node.js
+└── session/               # Dados de sessão (criado automaticamente)
+```
+
+## Dependências
+
+- `express`: Framework web para Node.js
+- `whatsapp-web.js`: Cliente WhatsApp Web
+- `qrcode-terminal`: Gerador de QR code para terminal
+
+## Notas Importantes
+
+⚠️ **Segurança:** Não compartilhe seu token de autenticação. Em produção, altere o valor padrão da variável `TOKEN`.
+
+⚠️ **Sessão:** Os dados da sessão são salvos na pasta `session/`. Não delete esta pasta durante o uso, ou será necessário escanear o QR code novamente.
+
+⚠️ **Conta WhatsApp:** A conta utilizada para autenticação não poderá usar o WhatsApp Web em outro navegador simultaneamente.
+
+## Licença
+
+MIT
