@@ -5,7 +5,7 @@ const qrcode = require('qrcode-terminal');
 const app = express();
 app.use(express.json());
 
-const TOKEN = process.env.TOKEN || "123456";
+const TOKEN = process.env.TOKEN || "9f4c2e7b8a1d6f03c5e9b2a47d8f1c6e";
 
 let pronto = false;
 let conectado = false;
@@ -65,7 +65,7 @@ client.initialize();
 // 📩 ENVIO
 app.post('/notify', async (req, res) => {
 
-  if (req.headers.authorization !== TOKEN) {
+  if (req.headers.apikey !== TOKEN) {
     return res.status(401).send("Não autorizado");
   }
 
